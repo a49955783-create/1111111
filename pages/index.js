@@ -1,105 +1,94 @@
 import { useState } from 'react';
-import Intro from '../components/Intro';
-import Drawer from '../components/Drawer';
+import Intro from '@/components/Intro';
 
 export default function Home() {
   const [rows, setRows] = useState([]);
-  const [editingRow, setEditingRow] = useState(null);
-  const [showDrawer, setShowDrawer] = useState(false);
-  const [finalText, setFinalText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [output, setOutput] = useState("");
 
   const addRow = () => {
-    setEditingRow({ name: '', code: '', status: 'في الخدمة', location: 'لا شيء' });
-    setShowDrawer(true);
+    setRows([...rows, { name: '', code: '', status: 'في الخدمة', location: 'لا شيء' }]);
   };
 
-  const saveRow = (row) => {
-    let newRows = [...rows];
-    if (editingRow.index !== undefined) {
-      newRows[editingRow.index] = row;
-    } else {
-      newRows.push(row);
-    }
+  const handleChange = (i, field, value) => {
+    const newRows = [...rows];
+    newRows[i][field] = value;
     setRows(newRows);
-    setShowDrawer(false);
   };
 
-  const deleteRow = (i) => {
-    setRows(rows.filter((_, idx) => idx !== i));
-  };
-
-  const generateFinal = () => {
-    setLoading(true);
-    setProgress(0);
-    let val = 0;
-    const interval = setInterval(() => {
-      val += 5;
-      setProgress(val);
-      if (val >= 100) {
-        clearInterval(interval);
-        setLoading(false);
-        let result = '📌 استلام العمليات 📌\n\n';
-        rows.forEach(r => {
-          let line = `${r.name} ${r.code}`;
-          if (r.status !== 'في الخدمة') line += ` (${r.status})`;
-          if (r.location !== 'لا شيء') line += ` - (${r.location})`;
-          result += line + '\n';
-        });
-        setFinalText(result);
-      }
-    }, 100);
+  const generateResult = () => {
+    let text = "📌 استلام العمليات 📌\n\n";
+    rows.forEach(r => {
+      text += `${r.name} ${r.code} (${r.status}) - (${r.location})\n`;
+    });
+    setOutput(text);
   };
 
   return (
-    <div>
+    <>
       <Intro />
-      <header className="header">
-        <img src="/3.png" alt="شعار الشرطة" className="logo" />
-        <h1>تحديث مركز العمليات للشرطة</h1>
-      </header>
+      <main className="p-6">
+        <header className="flex items-center gap-3 mb-6">
+          <img src="/3.png" alt="شعار الشرطة" className="w-10 h-10" />
+          <h1 className="text-2xl font-bold text-blue-200">تحديث مركز العمليات للشرطة</h1>
+        </header>
 
-      <div className="controls">
-        <button onClick={addRow}>➕ إضافة سطر جديد</button>
-        <button onClick={generateFinal}>📊 توليد النتيجة</button>
-      </div>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+          <button onClick={addRow} className="bg-purple-600 hover:bg-purple-700 text-white">إضافة سطر جديد</button>
+          <table className="w-full mt-4 border-collapse">
+            <thead>
+              <tr className="bg-gray-700">
+                <th className="p-2">الاسم</th>
+                <th className="p-2">الكود</th>
+                <th className="p-2">الحالة</th>
+                <th className="p-2">الموقع</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i} className="border-b border-gray-600">
+                  <td><input className="bg-gray-900 p-1 rounded" value={row.name} onChange={e => handleChange(i, 'name', e.target.value)} /></td>
+                  <td><input className="bg-gray-900 p-1 rounded" value={row.code} onChange={e => handleChange(i, 'code', e.target.value)} /></td>
+                  <td>
+                    <select className="bg-gray-900 p-1 rounded" value={row.status} onChange={e => handleChange(i, 'status', e.target.value)}>
+                      <option>في الخدمة</option>
+                      <option>مشغول</option>
+                      <option>مشغول - تدريب</option>
+                      <option>مشغول - اختبار</option>
+                      <option>خارج الخدمة</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select className="bg-gray-900 p-1 rounded" value={row.location} onChange={e => handleChange(i, 'location', e.target.value)}>
+                      <option>لا شيء</option>
+                      <option>الشمال</option>
+                      <option>الجنوب</option>
+                      <option>الشرق</option>
+                      <option>الغرب</option>
+                      <option>وسط</option>
+                      <option>ساندي</option>
+                      <option>بوليتو</option>
+                    </select>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-      <div className="list">
-        {rows.map((r, i) => (
-          <div key={i} className="row">
-            <span>{r.name}</span>
-            <span>{r.code}</span>
-            <span>{r.status}</span>
-            <span>{r.location}</span>
-            <div className="actions">
-              <button onClick={() => {setEditingRow({...r, index:i}); setShowDrawer(true);}}>✏️</button>
-              <button onClick={() => deleteRow(i)}>🗑️</button>
+          <button onClick={generateResult} className="mt-4 bg-green-600 hover:bg-green-700 text-white">عرض النتيجة</button>
+
+          {output && (
+            <div className="mt-4 p-3 bg-gray-900 rounded">
+              <pre>{output}</pre>
+              <button
+                onClick={() => {navigator.clipboard.writeText(output); alert("تم النسخ");}}
+                className="bg-blue-600 hover:bg-blue-700 text-white mt-2"
+              >
+                نسخ النتيجة
+              </button>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {loading && (
-        <div className="overlay">
-          <div className="progress-box">
-            <p>جارٍ الاستخراج...</p>
-            <div className="progress"><div style={{width: progress+'%'}}></div></div>
-            <span>{progress}%</span>
-          </div>
+          )}
         </div>
-      )}
-
-      {finalText && (
-        <div className="final">
-          <textarea value={finalText} readOnly></textarea>
-          <button onClick={() => {navigator.clipboard.writeText(finalText); alert('✅ تم النسخ بنجاح');}}>نسخ</button>
-        </div>
-      )}
-
-      {showDrawer && (
-        <Drawer row={editingRow} onSave={saveRow} onClose={() => setShowDrawer(false)} />
-      )}
-    </div>
+      </main>
+    </>
   );
 }

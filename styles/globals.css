@@ -1,25 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-  margin:0; font-family: 'Tajawal', sans-serif; background:#0d1117; color:white;
+  @apply bg-policeGray text-white font-sans;
 }
-.header {
-  display:flex; align-items:center; gap:10px; padding:10px; background:#111; justify-content:center;
+
+button {
+  @apply rounded-lg px-4 py-2 transition-all;
 }
-.logo { height:40px; }
-.controls { margin:15px; }
-button { padding:8px 12px; margin:5px; border:none; border-radius:6px; cursor:pointer; }
-button:hover { opacity:0.8; }
-.list { margin:15px; }
-.row { display:flex; gap:10px; background:#161b22; padding:8px; margin:5px 0; border-radius:6px; justify-content:space-between; }
-.actions button { margin:0 2px; }
-.final { margin:15px; }
-.final textarea { width:100%; height:150px; background:#161b22; color:white; border:none; border-radius:6px; padding:10px; }
-.intro { position:fixed; top:0; left:0; right:0; bottom:0; background:#0d1117; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; animation:fadeOut 3s forwards; }
-.intro-logo { height:80px; }
-@keyframes fadeOut { 0%{opacity:1;} 85%{opacity:1;} 100%{opacity:0; visibility:hidden;} }
-.drawer { position:fixed; top:0; right:0; bottom:0; width:300px; background:#161b22; padding:20px; z-index:10000; display:flex; flex-direction:column; }
-.drawer input, .drawer select { margin:5px 0; padding:8px; border:none; border-radius:4px; width:100%; }
-.drawer-actions { display:flex; gap:10px; margin-top:10px; }
-.overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; }
-.progress-box { background:#111; padding:20px; border-radius:10px; text-align:center; }
-.progress { width:100%; height:20px; background:#333; border-radius:10px; margin-top:10px; }
-.progress div { height:100%; background:#7c3aed; }
