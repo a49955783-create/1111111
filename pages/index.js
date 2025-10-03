@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Intro from '@/components/Intro';
+import Intro from '../components/Intro';
 
 export default function Home() {
   const [rows, setRows] = useState([]);
